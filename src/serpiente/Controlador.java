@@ -6,10 +6,8 @@
 package serpiente;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import static serpiente.Pantalla.*;
 
 /**

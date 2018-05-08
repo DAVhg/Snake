@@ -7,7 +7,6 @@ package serpiente;
 
 import java.awt.Color;
 import java.awt.*;
-import java.awt.GridLayout;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.*;
@@ -17,7 +16,7 @@ import javax.swing.*;
  * @author davidherreragarcia
  */
 public class Puntos extends JFrame {
-    
+    // Se crea otra Pantalla aparte para mostrar los puntos del usuario
     public Puntos(){
         setPantallaPuntos();
         iniciarPuntos();
@@ -43,6 +42,8 @@ public class Puntos extends JFrame {
         getContentPane().add(labelPuntos);
     }
     
+    // Para que en la ventana se muestren los puntos actualizados, debe cambiarse el texto del label cada vez que cogemos una comida.
+    // Es llamado por Pantalla cuando se coge una comida
     public static void actualizarPuntos() {
         labelPuntos.setText(String.valueOf("Puntos obtenidos: " + Pantalla.puntos));
     }

@@ -6,11 +6,9 @@
 package serpiente;
 
 import java.awt.*;
-import static java.awt.BorderLayout.CENTER;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import static serpiente.Controlador.*;
 
 /**
  *
@@ -23,12 +21,9 @@ public class Pantalla extends JFrame implements KeyListener {
         setPantalla();
         iniciarComponentes();
         colocarSerpiente();
-        //iniciarPuntos();
         this.addKeyListener(this);
     }
     
-
-   
         public static Casilla[][] casilla;
         static final int x = 50;
         static final int y = 50;
@@ -68,7 +63,7 @@ public class Pantalla extends JFrame implements KeyListener {
         this.getContentPane().setBackground(Color.GRAY);       
     }
         
-    private void iniciarComponentes() {
+    private void iniciarComponentes() {    // Se crea el tablero (una matriz de x*y casillas) y se añaden casillas en todos
         g = new GridLayout(x,y,1,1);
         this.setLayout(g);
         casilla = new Casilla[x][y];
@@ -79,34 +74,28 @@ public class Pantalla extends JFrame implements KeyListener {
             }
         }
         setIndice();
-        direccion = INICIAL;
-        velocidad = 160;
+        direccion = INICIAL; // Direccion en la que se mueve la serpiente inicialmente es 0, esperamos a pulsar una tecla para mover.
+        velocidad = 160;  // Velocidad en la que se mueve la serpiente. Cuanto mayor es, mas lento se mueve.
         fin = false;
         pausa = false;
         reiniciar = false;
-        contFood = 0;
         puntos = 0;
-        cabezaX = 25;
-        cabezaY = 25;
+        cabezaX = 25;  //Localizacion de la cabeza de la serpiente en X
+        cabezaY = 25;   //Localizacion de la cabeza de la serpiente en Y
         longSerpiente = 4;
-        t.start();
-        tComida.start();
+        t.start();   // Empezar la hebra principal
+        tComida.start(); //Empezar la hebra que genera las comidas
     }
      
-    private void iniciarPuntos() {
-        labelPuntos = new JLabel();
-        labelPuntos.setText(String.valueOf(Pantalla.puntos));
-        getContentPane().add(labelPuntos);
-    }
     public static void reiniciar(){
-        direccion = 2;
+        direccion = DER;  
         velocidad = 160;
         fin = false;
         pausa = false;
         reiniciar = false;
-        contFood = 0;
         puntos = 0;
-        Puntos.actualizarPuntos();
+        //Queremos que cambie la ventana de puntos, si lo quitamos aparecerían los puntos de la partida anterior.
+        Puntos.actualizarPuntos(); 
         cabezaX = 25;
         cabezaY = 25;
         longSerpiente = 4;
@@ -115,11 +104,12 @@ public class Pantalla extends JFrame implements KeyListener {
     }
     
     public static void colocarSerpiente() {
-        
+        // Desde la cabeza, el indice de las que están a su izquierda se van colocando disminuyendo su indice, hasta que es 0.
         for(int i = 0; i < longSerpiente; i++){
             casilla[cabezaX][cabezaY-i].indice = longSerpiente - i;
         }
         
+        //Se pinta la serpiente poniendo el fondo azul de todas las casillas con índice mayor que 0.
         for (int i = 1; i < x; i++) {
             for (int j = 1; j < y; j++) {
                 if (casilla[i][j].indice > 0) {
@@ -129,6 +119,7 @@ public class Pantalla extends JFrame implements KeyListener {
         }
     }
     
+     // Pinta el tablero, azul si su indice es mayor que 0 y no es comida, gris si indice = 0 y no es comida. Y amarillo si es comida.
     public static void pintar() {
         for (int i = 1; i < x; i++) {
             for (int j = 1; j < y; j++) {
@@ -143,14 +134,13 @@ public class Pantalla extends JFrame implements KeyListener {
         }
     }
     
-    public static void setIndice(){
+    public static void setIndice(){ // Se pinta el tablero de gris y su indice es 0, los bordes tienen indice -1
     for (int i = 1; i < x; i++) {
             for (int j = 1; j < y; j++) {
                 casilla[i][j].setBackground(Color.LIGHT_GRAY);
                 casilla[i][j].indice = 0;
             }
         }
-        
         for (int i = 1; i < x; i++) {
                 casilla[i][49].setBackground(Color.GRAY);
                 casilla[i][49].indice = -1;
@@ -170,7 +160,7 @@ public class Pantalla extends JFrame implements KeyListener {
     }
     
     
-    public static void setCabeza() {
+    public static void setCabeza() { //Cambia la posicion de la cabeza dependiendo su dirección
     if (Pantalla.direccion == ARRIBA) {
                     --cabezaX;
                 } else if (Pantalla.direccion == DER) {
@@ -182,11 +172,11 @@ public class Pantalla extends JFrame implements KeyListener {
                 }
     }
     
-    public static void crecer() {
-        longSerpiente++;
+    public static void crecer() { 
+        longSerpiente++; 
         switch (direccion) {
                case ARRIBA:
-                   casilla[cabezaX-1][cabezaY].indice = longSerpiente ;
+                   casilla[cabezaX-1][cabezaY].indice = longSerpiente; //Se añade una casilla en direccion de la serpiente
                    setCabeza();
                    pintar();
                    break;
@@ -219,7 +209,7 @@ public class Pantalla extends JFrame implements KeyListener {
     
     
     
-    public static void checkFood() {
+    public static void checkFood() { //Si la casilla donde esta la cabeza tiene el booleano food true, suma punto y crece.
         if (casilla[cabezaX][cabezaY].food) {
                     casilla[cabezaX][cabezaY].food = false;
                     casilla[cabezaX][cabezaY].setBackground(Color.BLUE);
@@ -230,7 +220,7 @@ public class Pantalla extends JFrame implements KeyListener {
                 }
     }
     
-    public static void mover(){
+    public static void mover(){ //Se cambia la cabeza de posicion segun su direccion
         switch (direccion) {
             case ARRIBA:
                 casilla[cabezaX-1][cabezaY].indice = longSerpiente + 1;
@@ -244,10 +234,10 @@ public class Pantalla extends JFrame implements KeyListener {
             case IZQ:
                 casilla[cabezaX][cabezaY-1].indice = longSerpiente + 1;
                 break;
-            case INICIAL:
+            case INICIAL: // en la direccion inicial no se mueve
                 break;
         }
-        if (direccion != INICIAL) {
+        if (direccion != INICIAL) { 
         for (int i = 1; i < x; i++) {
             for (int j = 1; j < y; j++) {
                 if (casilla[i][j].indice > 0) {
@@ -259,7 +249,7 @@ public class Pantalla extends JFrame implements KeyListener {
     }
     
    
-    public static void checkChoque(){
+    public static void checkChoque(){ //Si el indice de la cabeza es distinto de 0 (borde o tu propia serpiente), se pierde.
         switch (direccion) {
             case ARRIBA:
                 if (casilla[cabezaX-1][cabezaY].indice != 0) {
@@ -284,10 +274,10 @@ public class Pantalla extends JFrame implements KeyListener {
         }
     }
     
-    public static void generarFood() {
+    public static void generarFood() { //2 numeros random
         randX = new Random().nextInt(x-1);
         randY = new Random().nextInt(y-1);
-        while (casilla[randX][randY].indice != 0){
+        while (casilla[randX][randY].indice != 0){ // Si donde se ha generado es un borde o en la misma serpiente, se repite
             randX = new Random().nextInt(x-1);
             randY = new Random().nextInt(y-1);
         }
@@ -296,33 +286,18 @@ public class Pantalla extends JFrame implements KeyListener {
     }
      
     public static void main(String[] args) {
-        
-        Puntos a = new Puntos();
-        a.setVisible(true);
         Pantalla p = new Pantalla();
         p.setVisible(true);
+        Puntos a = new Puntos();
+        a.setVisible(true);
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        /*int code = e.getKeyCode();
-        if((code == KeyEvent.VK_UP || code == KeyEvent.VK_W)){
-            this.direccion = ARRIBA;
-            mover();
-        } else if((code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D)){
-            this.direccion = DER;
-            mover();
-        } else if((code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S)){
-            this.direccion = ABAJO;
-            mover();
-        } else if((code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A)){
-            this.direccion = IZQ;
-            mover();
-        }*/
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e) { //Cambia la direccion cuando pulses un tecla, mientras que no sea la direccion contraria
         int code = e.getKeyCode();
         if((code == KeyEvent.VK_UP || code == KeyEvent.VK_W) && direccion != ABAJO){
             this.direccion = ARRIBA;
@@ -333,35 +308,24 @@ public class Pantalla extends JFrame implements KeyListener {
             this.direccion = ABAJO;
         } else if((code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) && direccion != DER){
             this.direccion = IZQ;
-        } else if(code == KeyEvent.VK_5){
+            
+            //Atajos para probar cosas mientras se ejecuta el programa
+        } else if(code == KeyEvent.VK_5){ // Pulsando 5 se reinicia el juego
             reiniciar = true;
             
-        } else if(code == KeyEvent.VK_2){
+        } else if(code == KeyEvent.VK_2){ // Pulsando 2 la serpiente va mas DEPRISA
             velocidad = velocidad/2;
             
-        } else if(code == KeyEvent.VK_1){
+        } else if(code == KeyEvent.VK_1){ //Pulsando 1 la serpiente va mas DESPACIO
             velocidad = velocidad*2;
             
-        } else if(code == KeyEvent.VK_0){
+            
+        } else if(code == KeyEvent.VK_0){ //Pulsando 0 la serpiente crece
             crecer();
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        /*int code = e.getKeyCode();
-        if((code == KeyEvent.VK_UP || code == KeyEvent.VK_W)){
-            this.direccion = ARRIBA;
-            mover();
-        } else if((code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D)){
-            this.direccion = DER;
-            mover();
-        } else if((code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S)){
-            this.direccion = ABAJO;
-            mover();
-        } else if((code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A)){
-            this.direccion = IZQ;
-            mover();
-        }*/
     }
 }
